@@ -1,0 +1,422 @@
+# Bandit CTF Solutions Part II
+# Level 12 -> Level 23
+
+
+[+]Level 12 -> Level 13:
+
+# The password for the next level is stored in the file data.txt, which is a hexdump of a file that has been repeatedly compressed.
+# For this level it may be useful to create a directory under /tmp in which you can work.
+# Use mkdir with a hard to guess directory name. 
+# Or better, use the command “mktemp -d”.
+# Then copy the datafile using cp, and rename it using mv (read the manpages!)
+
+bandit12@bandit:~$ ls -l
+total 4
+-rw-r----- 1 bandit13 bandit12 2573 Oct 14 09:26 data.txt
+bandit12@bandit:~$ head -n 10 data.txt 
+00000000: 1f8b 0808 2e17 ee68 0203 6461 7461 322e  .......h..data2.
+00000010: 6269 6e00 0134 02cb fd42 5a68 3931 4159  bin..4...BZh91AY
+00000020: 2653 59b6 7680 8b00 001a ffff fadd cfd6  &SY.v...........
+00000030: f2e7 f6bb b87f 57ee fff3 b7d7 8bfd fafe  ......W.........
+00000040: bffe fdfd d9ef 3dff bfff bdff b001 3aa1  ......=.......:.
+00000050: a40d 007a 9901 a000 1a01 a000 1934 7a80  ...z.........4z.
+00000060: 6993 469a 6800 0068 1a00 0340 680d 0d00  i.F.h..h...@h...
+00000070: 01a6 8794 188d 0c27 a8d3 4608 8006 4d01  .......'..F...M.
+00000080: 8800 3268 c8d0 3434 0006 9a19 0f50 3400  ..2h..44.....P4.
+00000090: 1840 6403 2064 0034 1934 c468 c862 6868  .@d. d.4.4.h.bhh
+bandit12@bandit:~$ mkdir /tmp/kenobi
+bandit12@bandit:~$ cp data.txt /tmp/kenobi
+bandit12@bandit:/tmp/kenobi$ xxd -r data.txt > new_data
+bandit12@bandit:/tmp/kenobi$ ls
+data.txt  new_data
+bandit12@bandit:/tmp/kenobi$ file new_data 
+new_data: gzip compressed data, was "data2.bin", last modified: Tue Oct 14 09:26:06 2025, max compression, from Unix, original size modulo 2^32 564
+bandit12@bandit:/tmp/kenobi$ mv new_data new_data.gz
+bandit12@bandit:/tmp/kenobi$ ls -l
+total 8
+-rw-r----- 1 bandit12 bandit12 2573 Jan 18 17:11 data.txt
+-rw-rw-r-- 1 bandit12 bandit12  597 Jan 18 17:17 new_data.gz
+bandit12@bandit:/tmp/kenobi$ gzip -d new_data.gz 
+bandit12@bandit:/tmp/kenobi$ ls -l
+total 8
+-rw-r----- 1 bandit12 bandit12 2573 Jan 18 17:11 data.txt
+-rw-rw-r-- 1 bandit12 bandit12  564 Jan 18 17:17 new_data
+bandit12@bandit:/tmp/kenobi$ file new_data 
+new_data: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/kenobi$ mv new_data new_data.bz2
+bandit12@bandit:/tmp/kenobi$ bzip2 -d new_data.bz2 
+bandit12@bandit:/tmp/kenobi$ ls
+data.txt  new_data
+bandit12@bandit:/tmp/kenobi$ file new_data 
+new_data: gzip compressed data, was "data4.bin", last modified: Tue Oct 14 09:26:06 2025, max compression, from Unix, original size modulo 2^32 20480
+bandit12@bandit:/tmp/kenobi$ mv new_data new_data.gz
+bandit12@bandit:/tmp/kenobi$ gzip -d new_data.gz 
+bandit12@bandit:/tmp/kenobi$ ls
+data.txt  new_data
+bandit12@bandit:/tmp/kenobi$ file new_data 
+new_data: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/kenobi$ mv new_data new_data.tar
+bandit12@bandit:/tmp/kenobi$ tar -xf new_data.tar 
+bandit12@bandit:/tmp/kenobi$ ls
+data5.bin  data.txt  new_data.tar
+bandit12@bandit:/tmp/kenobi$ file data5.bin 
+data5.bin: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/kenobi$ file data5.bin 
+data5.bin: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/kenobi$ mv data5.bin pass.tar
+bandit12@bandit:/tmp/kenobi$ ls
+data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ tar -xf pass.tar 
+bandit12@bandit:/tmp/kenobi$ ls
+data6.bin  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ file data6.bin 
+data6.bin: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/kenobi$ mv data6.bin data6.bz2
+bandit12@bandit:/tmp/kenobi$ ls
+data6.bz2  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ bzip2 -d data6.bz2 
+bandit12@bandit:/tmp/kenobi$ ls
+data6  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ file data6
+data6: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/kenobi$ mv data6 data6.tar
+bandit12@bandit:/tmp/kenobi$ ls
+data6.tar  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ tar -xf data6.tar 
+bandit12@bandit:/tmp/kenobi$ ls
+data6.tar  data8.bin  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ file data8.bin 
+data8.bin: gzip compressed data, was "data9.bin", last modified: Tue Oct 14 09:26:06 2025, max compression, from Unix, original size modulo 2^32 49
+bandit12@bandit:/tmp/kenobi$ mv data8.bin data8.gz
+bandit12@bandit:/tmp/kenobi$ gzip -d data8.gz 
+bandit12@bandit:/tmp/kenobi$ ls
+data6.tar  data8  data.txt  new_data.tar  pass.tar
+bandit12@bandit:/tmp/kenobi$ file data8
+data8: ASCII text
+bandit12@bandit:/tmp/kenobi$ cat data8 
+The password is FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn                #bandit13 password
+
+
+!!! Command explanation:
+xxd: Normally a tool that converts the contents of a file into a "hex dump" (a view in hexadecimal).
+
+-r (Reverse): This is the most critical parameter. It instructs xxd to "read the hex codes on the screen and convert them back to their original byte form."
+
+data.txt: The source file containing the hex codes.
+
+>: The "redirection" operator in the Linux terminal. Instead of printing the command output to the screen, it writes it to a file.
+
+new_data: The name of the new binary file to be created.
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 13 -> Level 14:
+# The password for the next level is stored in /etc/bandit_pass/bandit14 and can only be read by user bandit14.
+# For this level, you don’t get the next password, but you get a private SSH key that can be used to log into the next level.
+# Look at the commands that logged you into previous bandit levels, and find out how to use the key for this level.
+
+!!! The command to connect to the next level(bandit14):
+bandit13@bandit:~$ ssh -i sshkey.private bandit14@localhost
+
+# Getting the bandit14 password after connecting with the sshkey
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
+
+# If you experience problems connecting to Bandit14 via Bandit13
+# Run these commands on your own machine, not through the bandit server you're connected to.
+scp bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private /path/to/download
+chmod 400 sshkey.private
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 14 -> Level 15:
+
+# The password for the next level can be retrieved by submitting the password of the current level to port 30000 on localhost.
+
+bandit14@bandit:~$ nc localhost 30000
+MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS        # bandit14 password
+Correct!
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo	      # bandit15 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 15 -> Level 16:
+
+# The password for the next level can be retrieved by submitting the password of the current level to port 30001 on localhost using SSL/TLS encryption.
+
+
+1. ncat command:
+bandit15@bandit:~$ ncat --ssl localhost 30001
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+Correct!
+kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx
+
+2. openssl command:
+bandit15@bandit:~$ openssl s_client localhost:30001
+CONNECTED(00000003)
+Can't use SSL_get_servername
+depth=0 CN = SnakeOil
+verify error:num=18:self-signed certificate
+verify return:1
+depth=0 CN = SnakeOil
+verify return:1
+---
+.
+.
+.
+.
+---
+read R BLOCK
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+Correct!
+kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx        #bandit16 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 16 -> Level 17:
+
+# The credentials for the next level can be retrieved by submitting the password of the current level to a port on localhost in the range 31000 to 32000. 
+# First find out which of these ports have a server listening on them.
+# Then find out which of those speak SSL/TLS and which don’t.
+# There is only 1 server that will give the next credentials, the others will simply send back to you whatever you send to it.
+
+
+bandit16@bandit:~$ ifconfig
+ens5: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9001
+        inet 10.0.1.164  netmask 255.255.255.0  broadcast 10.0.1.255
+
+bandit16@bandit:~$ nmap -p 31000-32000 10.0.1.164
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-01-18 18:31 UTC
+Nmap scan report for 10.0.1.164
+Host is up (0.00020s latency).
+Not shown: 996 closed tcp ports (conn-refused)
+PORT      STATE SERVICE
+31046/tcp open  unknown
+31518/tcp open  unknown
+31691/tcp open  unknown
+31790/tcp open  unknown
+31960/tcp open  unknown
+
+Nmap done: 1 IP address (1 host up) scanned in 13.08 seconds
+
+# Through trial and error, we found that the correct port is 31790
+bandit16@bandit:~$ ncat --ssl localhost 31790
+kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx
+Correct!
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAvmOkuifmMg6HL2YPIOjon6iWfbp7c3jx34YkYWqUH57SUdyJ
+imZzeyGC0gtZPGujUSxiJSWI/oTqexh+cAMTSMlOJf7+BrJObArnxd9Y7YT2bRPQ
+Ja6Lzb558YW3FZl87ORiO+rW4LCDCNd2lUvLE/GL2GWyuKN0K5iCd5TbtJzEkQTu
+DSt2mcNn4rhAL+JFr56o4T6z8WWAW18BR6yGrMq7Q/kALHYW3OekePQAzL0VUYbW
+JGTi65CxbCnzc/w4+mqQyvmzpWtMAzJTzAzQxNbkR2MBGySxDLrjg0LWN6sK7wNX
+x0YVztz/zbIkPjfkU1jHS+9EbVNj+D1XFOJuaQIDAQABAoIBABagpxpM1aoLWfvD
+KHcj10nqcoBc4oE11aFYQwik7xfW+24pRNuDE6SFthOar69jp5RlLwD1NhPx3iBl
+J9nOM8OJ0VToum43UOS8YxF8WwhXriYGnc1sskbwpXOUDc9uX4+UESzH22P29ovd
+d8WErY0gPxun8pbJLmxkAtWNhpMvfe0050vk9TL5wqbu9AlbssgTcCXkMQnPw9nC
+YNN6DDP2lbcBrvgT9YCNL6C+ZKufD52yOQ9qOkwFTEQpjtF4uNtJom+asvlpmS8A
+vLY9r60wYSvmZhNqBUrj7lyCtXMIu1kkd4w7F77k+DjHoAXyxcUp1DGL51sOmama
++TOWWgECgYEA8JtPxP0GRJ+IQkX262jM3dEIkza8ky5moIwUqYdsx0NxHgRRhORT
+8c8hAuRBb2G82so8vUHk/fur85OEfc9TncnCY2crpoqsghifKLxrLgtT+qDpfZnx
+SatLdt8GfQ85yA7hnWWJ2MxF3NaeSDm75Lsm+tBbAiyc9P2jGRNtMSkCgYEAypHd
+HCctNi/FwjulhttFx/rHYKhLidZDFYeiE/v45bN4yFm8x7R/b0iE7KaszX+Exdvt
+SghaTdcG0Knyw1bpJVyusavPzpaJMjdJ6tcFhVAbAjm7enCIvGCSx+X3l5SiWg0A
+R57hJglezIiVjv3aGwHwvlZvtszK6zV6oXFAu0ECgYAbjo46T4hyP5tJi93V5HDi
+Ttiek7xRVxUl+iU7rWkGAXFpMLFteQEsRr7PJ/lemmEY5eTDAFMLy9FL2m9oQWCg
+R8VdwSk8r9FGLS+9aKcV5PI/WEKlwgXinB3OhYimtiG2Cg5JCqIZFHxD6MjEGOiu
+L8ktHMPvodBwNsSBULpG0QKBgBAplTfC1HOnWiMGOU3KPwYWt0O6CdTkmJOmL8Ni
+blh9elyZ9FsGxsgtRBXRsqXuz7wtsQAgLHxbdLq/ZJQ7YfzOKU4ZxEnabvXnvWkU
+YOdjHdSOoKvDQNWu6ucyLRAWFuISeXw9a/9p7ftpxm0TSgyvmfLF2MIAEwyzRqaM
+77pBAoGAMmjmIJdjp+Ez8duyn3ieo36yrttF5NSsJLAbxFpdlc1gvtGCWW+9Cq0b
+dxviW8+TFVEBl1O4f7HVm6EpTscdDxU+bCXWkfjuRb7Dy9GOtt9JPsX8MBTakzh3
+vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
+-----END RSA PRIVATE KEY-----
+
+# The found RSA key was copied into a file and modified with the specified permissions
+# Run these commands on your own machine, not through the bandit server you're connected to
+ 
+> nano privkey17 (you can give the file any name you want)
+> chmod 400 privkey17
+> ssh -i privkey17 bandit17@bandit.labs.overthewire.org -p 2220
+bandit17@bandit:~$ cat /etc/bandit_pass/bandit17
+EReVavePLFHtFlFsjn3hyzMlvSuSAcRD                                #bandit17 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 17 -> Level 18:
+
+# There are 2 files in the homedirectory: passwords.old and passwords.new. The password for the next level is in passwords.new and is the only line that has been changed between passwords.old and passwords.new
+
+bandit17@bandit:~$ ls
+passwords.new  passwords.old
+bandit17@bandit:~$ diff passwords.old passwords.new 
+42c42
+< pGozC8kOHLkBMOaL0ICPvLV1IjQ5F1VA
+---
+> x2gLTTjFwMOhQ8oWNbMN362QKxfRqGlO                  #bandit18 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 18 -> Level 19:
+# The password for the next level is stored in a file readme in the homedirectory. Unfortunately, someone has modified .bashrc to log you out when you log in with SSH.
+
+# https://stackoverflow.com/questions/24993598/ssh-then-change-shell
+# This page will help you find a solution
+
+❯ ssh -t bandit18@bandit.labs.overthewire.org -p 2220 '/bin/sh'
+                         _                     _ _ _   
+                        | |__   __ _ _ __   __| (_) |_ 
+                        | '_ \ / _` | '_ \ / _` | | __|
+                        | |_) | (_| | | | | (_| | | |_ 
+                        |_.__/ \__,_|_| |_|\__,_|_|\__|
+                                                       
+
+                      This is an OverTheWire game server. 
+            More information on http://www.overthewire.org/wargames
+
+backend: gibson-1
+bandit18@bandit.labs.overthewire.org's password: 
+$ whoami
+bandit18
+$ cat /etc/bandit_pass/bandit18
+x2gLTTjFwMOhQ8oWNbMN362QKxfRqGlO
+$ pwd
+/home/bandit18
+$ ls
+readme
+$ cat readme
+cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8                        # bandit19 password
+
+!!! Command explanation:
+`ssh` starts the Secure Shell client.
+`-t` is the most critical parameter. It forces the creation of a "pseudo-terminal" (virtual terminal) on the remote server.
+`bandit18@...` Username and server address to connect to.
+`-p 2220` The private port number that SSH listens on.
+`/bin/sh` Command to be executed as soon as the server is connected.
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 19 -> Level 20:
+
+# To gain access to the next level, you should use the setuid binary in the homedirectory. Execute it without arguments to find out how to use it. The password for this level can be found in the usual place (/etc/bandit_pass), after you have used the setuid binary.
+
+bandit19@bandit:~$ ls -l
+total 16
+-rwsr-x--- 1 bandit20 bandit19 14884 Oct 14 09:26 bandit20-do
+bandit19@bandit:~$ ./bandit20-do 
+Run a command as another user.
+  Example: ./bandit20-do whoami
+bandit19@bandit:~$ ./bandit20-do pwd
+/home/bandit19
+bandit19@bandit:~$ ./bandit20-do ls /tmp
+ls: cannot open directory '/tmp': Permission denied
+bandit19@bandit:~$ ./bandit20-do cat /etc/bandit_pass/bandit19
+cat: /etc/bandit_pass/bandit19: Permission denied
+bandit19@bandit:~$ ./bandit20-do cat /etc/bandit_pass/bandit20
+0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO                                  #bandit20 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 20 -> Level 21:
+
+# There is a setuid binary in the homedirectory that does the following: it makes a connection to localhost on the port you specify as a commandline argument.
+# It then reads a line of text from the connection and compares it to the password in the previous level (bandit20).
+# If the password is correct, it will transmit the password for the next level (bandit21).
+
+bandit20@bandit:~$ nmap -p- localhost
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-01-18 19:53 UTC
+Nmap scan report for localhost (127.0.0.1)
+Host is up (0.00012s latency).
+Not shown: 65505 closed tcp ports (conn-refused)
+PORT      STATE SERVICE
+22/tcp    open  ssh
+1111/tcp  open  lmsocialserver
+1840/tcp  open  netopia-vo2
+2220/tcp  open  netiq
+2221/tcp  open  rockwell-csp1
+2223/tcp  open  rockwell-csp2
+2224/tcp  open  efi-mg
+2225/tcp  open  rcip-itu
+2226/tcp  open  di-drm
+2227/tcp  open  di-msg
+2228/tcp  open  ehome-ms
+2230/tcp  open  queueadm
+2231/tcp  open  wimaxasncp
+2232/tcp  open  ivs-video
+4091/tcp  open  ewinstaller
+4258/tcp  open  vrml-multi-use
+4321/tcp  open  rwhois
+5842/tcp  open  reversion
+8000/tcp  open  http-alt
+30000/tcp open  ndmps
+30001/tcp open  pago-services1
+30002/tcp open  pago-services2
+31046/tcp open  unknown
+31518/tcp open  unknown
+31691/tcp open  unknown
+31790/tcp open  unknown
+31960/tcp open  unknown
+50001/tcp open  unknown
+51790/tcp open  unknown
+60917/tcp open  unknown
+
+# To solve this problem, open two terminals with "bandit20". In one, listen for the NC (Network) signal, and in the other, run the suconnect script, which will give you the correct password.
+
+!!!! Both terminals must operate simultaneously !!!!
+
+1. Terminal:
+bandit20@bandit:~$ ./suconnect 4444
+0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO
+Read: 0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO
+Password matches, sending next password
+bandit20@bandit:~$ 0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO
+0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO: command not found
+
+2. Terminal:
+bandit20@bandit:~$ nc -nvlp 4444
+Listening on 0.0.0.0 4444
+Connection received on 127.0.0.1 59448
+0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO
+EeoULMCra2q0dSkYj561DX7s1CpBuOBt              # bandit21 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 21 -> Level 22:
+
+# A program is running automatically at regular intervals from cron, the time-based job scheduler. Look in /etc/cron.d/ for the configuration and see what command is being executed.
+
+bandit21@bandit:~$ ls -l
+total 0
+bandit21@bandit:~$ ls /etc/cron.d
+behemoth4_cleanup  cronjob_bandit22  cronjob_bandit24  leviathan5_cleanup    otw-tmp-dir
+clean_tmp          cronjob_bandit23  e2scrub_all       manpage3_resetpw_job  sysstat
+bandit21@bandit:~$ cat /etc/cron.d/cronjob_bandit22
+@reboot bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+* * * * * bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null       # check this script
+bandit21@bandit:~$ cat /usr/bin/cronjob_bandit22.sh           
+#!/bin/bash
+chmod 644 /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+cat /etc/bandit_pass/bandit22 > /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+bandit21@bandit:~$ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+tRae0UfB9v0UzbCdn9cY0gQnds9GF58Q				                              # bandit22 password
+--------------------------------------------------------------------------------------------------------
+
+[+] Level 22 -> Level 23:
+
+# A program is running automatically at regular intervals from cron, the time-based job scheduler. Look in /etc/cron.d/ for the configuration and see what command is being executed.
+
+
+bandit22@bandit:~$ ls /etc/cron.d
+behemoth4_cleanup  cronjob_bandit22  cronjob_bandit24  leviathan5_cleanup    otw-tmp-dir
+clean_tmp          cronjob_bandit23  e2scrub_all       manpage3_resetpw_job  sysstat
+bandit22@bandit:~$ cat /etc/cron.d/cronjob_bandit23
+@reboot bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+* * * * * bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+bandit22@bandit:~$ cat /usr/bin/cronjob_bandit23.sh 
+#!/bin/bash
+
+myname=$(whoami)
+mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)
+
+echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
+
+cat /etc/bandit_pass/$myname > /tmp/$mytarget
+bandit22@bandit:~$ myname=bandit23
+bandit22@bandit:~$ $myname
+bandit23: command not found
+bandit22@bandit:~$ echo I am user $myname | md5sum | cut -d ' ' -f 1
+8ca319486bfbbc3663ea0fbe81326349
+bandit22@bandit:~$ cat /tmp/8ca319486bfbbc3663ea0fbe81326349
+0Zf11ioIjMVN551jX3CmStKLYqjk54Ga 				                    # bandit23 password
+--------------------------------------------------------------------------------------------------------

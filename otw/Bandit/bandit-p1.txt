@@ -1,0 +1,279 @@
+# Bandit Ctf Solutions Part I
+# https://overthewire.org/wargames/bandit/
+# Level 0 -> Level 12
+
+SSH Information:
+[Host: bandit.labs.overthewire.org]
+[Port: 2220]
+
+Level 0:
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+password: bandit0
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 0 -> Level 1:
+# After logging into the system, 
+# we can proceed to the next level using the password found in the readme file located in the home directory.
+
+$ cat readme
+[The password you are looking for is: ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If]                    #bandit1 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 1 -> Level 2:
+# The password needed to advance to level 2 is inside the file named "-".
+# To read it, you need to do the following:
+
+$ cat ./-
+263JGJPfgU6LtdEvgfWU1XP5yac29mFx       #bandit2 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 2 -> Level 3:
+# The password for the next level is stored in a file called - located in the home directory
+# There are a few different ways to read this file:
+
+1.By specifying the file path:
+bandit2@bandit:~$ cat ./"--spaces in this filename--"
+MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
+
+2.Using double dash(--):
+bandit2@bandit:~$ cat -- "--spaces in this filename--"
+MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
+
+3.Using the escape character:
+bandit2@bandit:~$ cat ./--spaces\ in\ this\ filename--
+MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx                         #bandit3 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 3 -> Level 4:
+# The password for the next level is stored in a hidden file in the inhere directory.
+
+bandit3@bandit:~$ ls
+inhere
+bandit3@bandit:~$ cd inhere/
+bandit3@bandit:~/inhere$ ls -la
+total 12
+drwxr-xr-x 2 root    root    4096 Oct 14 09:26 .
+drwxr-xr-x 3 root    root    4096 Oct 14 09:26 ..
+-rw-r----- 1 bandit4 bandit3   33 Oct 14 09:26 ...Hiding-From-You
+bandit3@bandit:~/inhere$ cat ...Hiding-From-You 
+2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ                         #bandit4 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 4 -> Level 5:
+# The password for the next level is stored in the only human-readable file in the inhere directory. 
+# Tip: if your terminal is messed up, try the “reset” command.
+
+bandit4@bandit:~$ ls 
+inhere
+bandit4@bandit:~$ cd inhere
+bandit4@bandit:~/inhere$ ls -l
+total 40
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file00
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file01
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file02
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file03
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file04
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file05
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file06
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file07
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file08
+-rw-r----- 1 bandit5 bandit4 33 Oct 14 09:26 -file09
+bandit4@bandit:~/inhere$ cat ./-file00
+�=
+I�� ��V`n�5���ѳ��*�G^7؅cO�bandit4@bandit:~/inhere$reset
+
+# The file containing the password:
+bandit4@bandit:~/inhere$ cat ./-file07
+4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw                         #bandit5 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 5 -> Level 6:
+# The password for the next level is stored in a file somewhere under the inhere directory 
+# and has all of the following properties:
+# human-readavle, 1033 bytes in size, not executable
+
+bandit5@bandit:~/inhere$ ls
+maybehere00  maybehere03  maybehere06  maybehere09  maybehere12  maybehere15  maybehere18
+maybehere01  maybehere04  maybehere07  maybehere10  maybehere13  maybehere16  maybehere19
+maybehere02  maybehere05  maybehere08  maybehere11  maybehere14  maybehere17
+
+# The `inhere` directory contains 20 directories. 
+# instead of traversing them one by one, 
+# it's possible to find the desired file with a single command.
+
+bandit5@bandit:~/inhere$ find . -type f -size 1033c ! -executable
+./maybehere07/.file2
+bandit5@bandit:~/inhere$ cat ./maybehere07/.file2
+HWasnPhtq9AVKe0dmk45nxy20cvUa6EG                           #bandit6 password
+
+!!! Command explanation:
+`find .`: Starts the search from the current directory (.). It includes all subfolders.
+
+`-type f`: Search only for files (do not include folders, symbolic links, etc.).
+
+`-size 1033c`: Find files with a size of exactly 1033 bytes. The 'c' stands for 'character', meaning byte.
+
+`! -executable`: Find files that are not executable. The exclamation mark (!) at the beginning is a logical operator meaning "otherwise".
+
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 6 -> Level 7:
+# The password for the next level is stored somewhere on the server and has all of the following properties:
+# owned by user bandit7, owned by group bandit6, 33 bytes in size
+
+bandit6@bandit:~$ find / -user bandit7 -group bandit6 2>/dev/null
+/var/lib/dpkg/info/bandit7.password
+bandit6@bandit:~$ cat /var/lib/dpkg/info/bandit7.password 
+morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj                              #bandit7 password
+
+!!! Command explanation:
+`find /`: Starts the search from the root directory (/). This scans the entire system and all folders.
+
+`-user bandit7`: Filters files owned by `bandit7`.
+
+`-group bandit6`: Filters files in the group `bandit6`.
+
+`/dev/null`: This part is one of the most critical aspects of the command.
+
+Because you're scanning the entire system, you'll get "Permission denied" errors for folders you don't have access to.
+
+`2` represents the error stream (stderr).
+
+`/dev/null` sends these errors to an empty file known as a "black hole".
+
+Result: You'll only see files that were successfully found, eliminating the clutter of errors.
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 7 -> Level 8:
+# The password for the next level is stored in the file data.txt next to the word millionth
+
+bandit7@bandit:~$ ls -lh
+total 4.0M
+-rw-r----- 1 bandit8 bandit7 4.0M Oct 14 09:26 data.txt
+
+# This file contains a lot of information, 
+# and here's what you need to do to find what you're specifically looking for:
+
+1. Using cat:
+bandit7@bandit:~$ cat data.txt | grep millionth
+millionth       dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
+
+2. Using strings:
+bandit7@bandit:~$ strings data.txt | grep "millionth"
+millionth       dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc                    #bandit8 password
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 8 -> Level 9:
+# The password for the next level is stored in the file data.txt and is the only line of text that occurs only once
+
+bandit8@bandit:~$ ls -l
+total 36
+-rw-r----- 1 bandit9 bandit8 33033 Oct 14 09:26 data.txt
+bandit8@bandit:~$ head -n 15 data.txt
+UD0JGdEzC9MvLEFryrg13oTd5Hb07iWd
+7GmAoWty7FVrx69vVdHsWI3K7bhXB7ck
+XFZ2qtQ5m9FCzyje1e5fCvm2F1TeU5pJ
+SigSsDLtaSCPLVAD19uwb7HMhgacgZIQ
+n4AyXe6YBg4jxCI962uvCGds9tmRDEC0
+X4Jb6zVDJ9UdgbMwRYkNcFY8Ej9DvF1Y
+bDl7043OFGqzHtKz5iYpTFi3Zln25Jmw
+fhdDKwDN5APtF9E7fQXwnXvotlDBGPxj
+hBVAVvsUSGFy4l6G0AXj6Eo3wdbrXo7H
+CNGEVMYxOaDE4pwyEo98rmCZKrXm8U4Q
+hiwrYmTaRXas0LIjyRYtDm0M27MIWrG1
+jJNggZ3eHd5HsB2iDY6zoWoTmKYwLkyY
+PRw1j80WSd0O7EzQpRPqQfSIt2SjfqBe
+GEzus73iOvDpikMyzxwa4NPFN44KteAm
+dSfu6VSP2RYInUJTdzsQQ82mZ885UsJI
+
+# The data.txt contains copied phrasem and only the password is available as a unique phrase
+# To find the password:
+bandit8@bandit:~$ sort data.txt | uniq -c
+     10 037tttR5YpQVPyHblRMYKlykrsuwdK01
+     10 0kUWzRKPfW3yanU9l7ShZYQQHiwh6kPR
+     10 2E01uUQMBOGXxVooSFO0uezEWAfActMH
+     10 2UbrvLqP3s5Hpz8a44FAW3tYHr4mO9ic
+     10 3yaj6VGAygiJGYZo04LXXDVTkJyDLMlE
+      1 4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
+     10 7GmAoWty7FVrx69vVdHsWI3K7bhXB7ck
+     10 7H9nQo3GlygGw2PphTBa5Xa0MxZKXBaU
+     10 7KHq0iAOXBUms4TriA0XfQTh6pTzRzs6
+     10 8MNnqNdEQCk107HPCHvn10HhkUF607u4
+     10 9snWh4JwYe7HZaRXhLYyRrG0Iyl301cq
+     10 a8EPDYuGBd3mvar2s0aF5VFdaAY0GbUP
+     10 aBqxUNchLJzDqy5nz9mBgCwInMKyzm4x
+     10 adM9ZVjw0DHudyEcA856OsvL5In41x1L
+     10 aPrkZzlXJ5R3deoUokncWdGQvRbXC40C
+     10 bDl7043OFGqzHtKz5iYpTFi3Zln25Jmw
+     10 Bel6KnhISjL7PbcXkAyGlw9AvWJIxRW2
+      .
+      .
+      .
+password:4CKMh1JI91bUIZZPXDqGanal4xvAg0JM   #bandit9 password
+
+!!! Command explanation:
+`sort data.txt`: Sorts all lines in the file alphabetically. This is very important because the `uniq` command can only compare consecutive lines.
+
+`uniq -c`: Groups identical lines and adds a number to the left of each line indicating how many times it appears.
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 9 -> Level 10:
+# The password for the next level is stored in the file data.txt in one of the few human-readable strings, preceded by several ‘=’ characters.
+
+bandit9@bandit:~$ ls -l
+total 20
+-rw-r----- 1 bandit10 bandit9 19382 Oct 14 09:26 data.txt
+bandit9@bandit:~$ cat data.txt | grep ==
+grep: (standard input): binary file matches
+bandit9@bandit:~$ strings data.txt | grep ==
+========== the
+========== password
+f\Z'========== is
+========== FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey                    #bandit10 password
+bandit9@bandit:~$ 
+
+!!! Explanation:
+If the file is binary, `cat` will return an error; if it's strings, it will filter out hidden text.
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 10 -> Level 11:
+# The password for the next level is stored in the file data.txt, which contains base64 encoded data
+# base64
+
+bandit10@bandit:~$ ls -l
+total 4
+-rw-r----- 1 bandit11 bandit10 69 Oct 14 09:26 data.txt
+bandit10@bandit:~$ cat data.txt 
+VGhlIHBhc3N3b3JkIGlzIGR0UjE3M2ZaS2IwUlJzREZTR3NnMlJXbnBOVmozcVJyCg==
+bandit10@bandit:~$ echo "VGhlIHBhc3N3b3JkIGlzIGR0UjE3M2ZaS2IwUlJzREZTR3NnMlJXbnBOVmozcVJyCg==" | base64 -d
+The password is dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr               #bandit11 password
+
+!!! Command explanation: 
+echo "...": Passes the seemingly complex text inside the quotation marks to the next command.
+
+| (Pipe): Passes the output on the left as input to the command on the right.
+
+base64 -d: Decodes the incoming data from Base64 format (-d = decode).
+--------------------------------------------------------------------------------------------------------
+
+[+]Level 11 -> Level 12:
+# The password for the next level is stored in the file data.txt, where all lowercase (a-z) and uppercase (A-Z) letters have been rotated by 13 positions
+# ROT13
+
+bandit11@bandit:~$ ls -l
+total 4
+-rw-r----- 1 bandit12 bandit11 49 Oct 14 09:26 data.txt
+bandit11@bandit:~$ cat data.txt 
+Gur cnffjbeq vf 7k16JArUVv5LxVuJfsSVdbbtaHGlw9D4
+bandit11@bandit:~$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+The password is 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4             #bandit12 password
+
+!!! Command explanation:
+`cat data.txt`: Reads the encrypted text.
+
+`tr (translate)`: This command is used to change or delete characters.
+
+`'A-Za-z'`: Source set. Represents all uppercase and lowercase letters in the alphabet.
+
+`'N-ZA-Mn-za-m'`: Target set. Shifts the alphabet 13 characters, starting with the letter N.
+--------------------------------------------------------------------------------------------------------
