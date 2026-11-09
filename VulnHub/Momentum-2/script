@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# It prints the letters A-Z as "A'" and saves it to letters.txt.
+for c in {A..Z}
+do
+  echo "${c}'"
+done > letters.txt
+
