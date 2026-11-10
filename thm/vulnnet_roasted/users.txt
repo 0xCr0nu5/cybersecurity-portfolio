@@ -1,0 +1,8 @@
+administrator
+guest
+krbtgt
+enterprise-core-vn
+a-whitehat
+t-skid
+j-goldenhand
+j-leet
